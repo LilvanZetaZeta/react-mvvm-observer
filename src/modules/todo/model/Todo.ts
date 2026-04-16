@@ -1,9 +1,8 @@
-export class Todo{
+export interface Todo{
     id: number;
     text: string;
+}
 
-    constructor(id:number, text:string){
-        this.id = id;
-        this.text = text;
-    }
+export interface CreateTodoDto {
+    text: string;
 }

@@ -1,48 +1,13 @@
-import { createContext, useContext, useState } from "react";
+import { configureStore } from "@reduxjs/toolkit";
+import { todoApi } from "../service/todoService";
 
-interface Todo{
-    id: number;
-    text: string;
-}
+export const store = configureStore({
+  reducer: {
+    [todoApi.reducerPath]: todoApi.reducer,
+  },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(todoApi.middleware),
+});
 
-interface TodoContextType{
-    todos: Todo[];
-    addTodo: (todo: Todo) => void;
-    removeTodo:(id: number) => void;
-}
-
-const TodoContext = createContext<TodoContextType | undefined>(undefined);
-
-interface TodoProviderProps{
-    children: React.ReactNode;
-}
-
-export const TodoProvider = ({ children }: TodoProviderProps) => {
-    const [todos, setTodos] = useState<Todo[]>([]);
-
-    const addTodo = (todo: Todo) => {
-        setTodos((prev) => [...prev, todo]);
-    };
-
-    const removeTodo = (id: number) => {
-        setTodos((prev) => prev.filter((t) => t.id !== id));
-    };
-
-    return (
-        <TodoContext.Provider value = {{ todos, addTodo, removeTodo}}>
-            {children}
-        </TodoContext.Provider>
-
-    );
-
-};
-
-export const useTodos = () => {
-    const context = useContext(TodoContext);
-    if (!context) {
-        throw new Error("useTodos must be used withing a TodoProvider");
-    }
-    return context;
-};
-
-
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
